@@ -35,3 +35,19 @@ export const checkAndInitializeGA = () => {
     initializeGA();
   }
 };
+
+export const trackPageView = (pageName: string) => {
+  if (typeof window === "undefined" || !window.gtag) return;
+  window.gtag("event", "page_view", {
+    page_title: pageName,
+    page_location: window.location.href,
+  });
+};
+
+export const trackEvent = (
+  eventName: string,
+  params?: Record<string, string | number | boolean>
+) => {
+  if (typeof window === "undefined" || !window.gtag) return;
+  window.gtag("event", eventName, params);
+};

@@ -12,6 +12,7 @@ import {
   calculatePercentile,
 } from '@/types/questions';
 import { getModuleQuestions, shuffleArray } from '@/data/questions';
+import { trackEvent, trackPageView } from '@/lib/analytics';
 
 export type TestPhase = 
   | 'welcome'
@@ -61,10 +62,14 @@ export function TestProvider({ children }: { children: ReactNode }) {
   });
 
   const startTest = useCallback(() => {
+    trackEvent('test_started');
+    trackPageView('Disclaimer');
     setState(prev => ({ ...prev, phase: 'disclaimer' }));
   }, []);
 
   const acceptDisclaimer = useCallback(() => {
+    trackEvent('disclaimer_accepted');
+    trackPageView('Module Intro');
     setState(prev => ({ ...prev, phase: 'module-intro' }));
   }, []);
 
@@ -72,6 +77,12 @@ export function TestProvider({ children }: { children: ReactNode }) {
     const currentModule = MODULES[state.currentModuleIndex];
     const moduleQuestions = getModuleQuestions(currentModule.id);
     const shuffledQuestions = shuffleArray(moduleQuestions);
+    
+    trackEvent('module_started', { 
+      module_name: currentModule.name,
+      module_index: state.currentModuleIndex + 1 
+    });
+    trackPageView(`Question - ${currentModule.name}`);
     
     setState(prev => ({
       ...prev,
@@ -148,12 +159,25 @@ export function TestProvider({ children }: { children: ReactNode }) {
         completedAt: new Date(),
       };
 
+      trackEvent('test_completed', {
+        iq_score: iq.base,
+        percentile: percentile,
+        overall_score: Math.round(overallScore)
+      });
+      trackPageView('Results');
+
       setState(prev => ({
         ...prev,
         result,
         phase: 'results',
       }));
     } else {
+      trackEvent('module_completed', {
+        module_name: MODULES[state.currentModuleIndex].name,
+        module_index: state.currentModuleIndex + 1
+      });
+      trackPageView('Module Intro');
+      
       setState(prev => ({
         ...prev,
         currentModuleIndex: prev.currentModuleIndex + 1,
@@ -170,6 +194,8 @@ export function TestProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resetTest = useCallback(() => {
+    trackEvent('test_reset');
+    trackPageView('Welcome');
     setState({
       phase: 'welcome',
       currentModuleIndex: 0,
