@@ -58,9 +58,13 @@ export function WelcomeScreen() {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <header className="relative min-h-screen bg-gradient-hero flex flex-col items-center justify-center p-6 overflow-hidden">
-        {/* Auth buttons */}
-        <nav className="absolute top-4 right-4 z-20 flex items-center gap-2" aria-label="User navigation">
+        {/* Language switcher - top left */}
+        <div className="absolute top-4 left-4 z-20">
           <LanguageSwitcher />
+        </div>
+
+        {/* Auth buttons - top right */}
+        <nav className="absolute top-4 right-4 z-20 flex items-center gap-2" aria-label="User navigation">
           {user ? (
             <>
               {isPremium && (
