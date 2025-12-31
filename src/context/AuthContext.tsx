@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { trackEvent } from '@/lib/analytics';
 
 interface AuthContextType {
   user: User | null;
@@ -86,6 +87,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
     
+    if (!error) {
+      trackEvent('user_signed_up');
+    } else {
+      trackEvent('signup_error', { error_message: error.message });
+    }
+    
     return { error: error as Error | null };
   };
 
@@ -95,10 +102,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
     });
     
+    if (!error) {
+      trackEvent('user_signed_in');
+    } else {
+      trackEvent('signin_error', { error_message: error.message });
+    }
+    
     return { error: error as Error | null };
   };
 
   const signOut = async () => {
+    trackEvent('user_signed_out');
     await supabase.auth.signOut();
     setIsPremium(false);
   };
