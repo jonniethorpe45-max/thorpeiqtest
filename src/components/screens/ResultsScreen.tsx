@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useTest } from '@/context/TestContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTestHistory } from '@/hooks/useTestHistory';
@@ -21,24 +22,26 @@ export function ResultsScreen() {
   const { checkAndCompleteFromResults } = useChallenges();
   const [isLoading, setIsLoading] = useState(false);
   const [displayName, setDisplayName] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const hasSavedResult = useRef(false);
   const hasCheckedChallenges = useRef(false);
 
-  // Fetch user profile for display name
+  // Fetch user profile for display name and avatar
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user) return;
       
       const { data } = await supabase
         .from('profiles')
-        .select('display_name')
+        .select('display_name, avatar_url')
         .eq('user_id', user.id)
         .maybeSingle();
       
-      if (data?.display_name) {
+      if (data) {
         setDisplayName(data.display_name);
+        setAvatarUrl(data.avatar_url);
       }
     };
     
@@ -186,6 +189,21 @@ export function ResultsScreen() {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_hsl(var(--primary)/0.1)_0%,_transparent_70%)]" />
             
             <div className="relative z-10">
+              {/* User avatar and name */}
+              {user && (
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <Avatar className="w-12 h-12 border-2 border-primary/30">
+                    <AvatarImage src={avatarUrl || undefined} alt={displayName || 'User avatar'} />
+                    <AvatarFallback className="bg-primary/20 text-primary text-lg">
+                      {(displayName || user.email?.split('@')[0] || 'U').charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-foreground font-medium">
+                    {displayName || user.email?.split('@')[0]}
+                  </span>
+                </div>
+              )}
+
               <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">
                 Your IQ Estimate
               </h2>
@@ -312,10 +330,10 @@ export function ResultsScreen() {
               size="default"
               className={`w-full ${!isPremium && 'opacity-50'}`}
               disabled={!isPremium}
-              onClick={() => {
+              onClick={async () => {
                 if (isPremium && result) {
                   trackEvent('pdf_report_downloaded', { iq_score: result.iqBase });
-                  generatePDFReport({ result, userName: displayName || user?.email });
+                  await generatePDFReport({ result, userName: displayName || user?.email, avatarUrl: avatarUrl || undefined });
                   toast.success('PDF report downloaded!');
                 }
               }}
