@@ -14,7 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      test_results: {
+        Row: {
+          completed_at: string
+          created_at: string
+          id: string
+          iq_base: number
+          iq_max: number
+          iq_min: number
+          memory_score: number | null
+          overall_score: number
+          pattern_score: number | null
+          percentile: number
+          spatial_score: number | null
+          speed_score: number | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          created_at?: string
+          id?: string
+          iq_base: number
+          iq_max: number
+          iq_min: number
+          memory_score?: number | null
+          overall_score: number
+          pattern_score?: number | null
+          percentile: number
+          spatial_score?: number | null
+          speed_score?: number | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          id?: string
+          iq_base?: number
+          iq_max?: number
+          iq_min?: number
+          memory_score?: number | null
+          overall_score?: number
+          pattern_score?: number | null
+          percentile?: number
+          spatial_score?: number | null
+          speed_score?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

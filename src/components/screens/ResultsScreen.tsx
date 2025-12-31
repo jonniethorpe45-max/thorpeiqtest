@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useTest } from '@/context/TestContext';
 import { useAuth } from '@/context/AuthContext';
+import { useTestHistory } from '@/hooks/useTestHistory';
 import { MODULES } from '@/types/questions';
-import { Share2, Crown, RotateCcw, Download, Brain, Zap, Target, Boxes, Loader2, Check } from 'lucide-react';
+import { Share2, Crown, RotateCcw, Download, Brain, Zap, Target, Boxes, Loader2, Check, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { generatePDFReport } from '@/lib/pdfGenerator';
@@ -14,9 +15,11 @@ import { generatePDFReport } from '@/lib/pdfGenerator';
 export function ResultsScreen() {
   const { result, resetTest } = useTest();
   const { user, isPremium, checkPremiumStatus } = useAuth();
+  const { saveResult } = useTestHistory();
   const [isLoading, setIsLoading] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const hasSavedResult = useRef(false);
 
   // Check for payment success in URL
   useEffect(() => {
@@ -24,13 +27,24 @@ export function ResultsScreen() {
     if (paymentStatus === 'success') {
       toast.success('Payment successful! Premium features unlocked.');
       checkPremiumStatus();
-      // Clear the URL params
       navigate('/', { replace: true });
     } else if (paymentStatus === 'cancelled') {
       toast.info('Payment cancelled');
       navigate('/', { replace: true });
     }
   }, [searchParams, checkPremiumStatus, navigate]);
+
+  // Auto-save result for premium users
+  useEffect(() => {
+    if (result && user && isPremium && !hasSavedResult.current) {
+      hasSavedResult.current = true;
+      saveResult(result).then((saved) => {
+        if (saved) {
+          toast.success('Result saved to your history');
+        }
+      });
+    }
+  }, [result, user, isPremium, saveResult]);
 
   if (!result) return null;
 
@@ -251,6 +265,18 @@ export function ResultsScreen() {
               PDF
             </Button>
           </div>
+
+          {isPremium && (
+            <Button
+              variant="outline"
+              size="default"
+              className="w-full border-primary/30"
+              onClick={() => navigate('/progress')}
+            >
+              <TrendingUp className="w-4 h-4 mr-2" />
+              View Progress History
+            </Button>
+          )}
         </div>
 
         {/* Disclaimer */}
