@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { useTestHistory, SavedTestResult } from '@/hooks/useTestHistory';
-import { Brain, TrendingUp, TrendingDown, Minus, Trophy, Calendar, ArrowLeft, Crown, Loader2 } from 'lucide-react';
+import { Brain, TrendingUp, TrendingDown, Minus, Trophy, Calendar, ArrowLeft, Crown, Loader2, BarChart3 } from 'lucide-react';
 import { format } from 'date-fns';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 
 export default function Progress() {
   const navigate = useNavigate();
@@ -52,6 +53,18 @@ export default function Progress() {
   }
 
   const stats = getProgressStats();
+
+  // Prepare chart data (reverse to show oldest first)
+  const chartData = useMemo(() => {
+    return [...history]
+      .reverse()
+      .map((result, index) => ({
+        name: format(new Date(result.completed_at), 'MMM d'),
+        iq: result.iq_base,
+        overall: Math.round(result.overall_score),
+        test: index + 1,
+      }));
+  }, [history]);
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
@@ -117,6 +130,62 @@ export default function Progress() {
                   <div className="text-xs text-muted-foreground">Change</div>
                 </Card>
               </div>
+            )}
+
+            {/* IQ Trend Chart */}
+            {history.length >= 2 && (
+              <Card variant="glass">
+                <CardHeader>
+                  <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-primary" />
+                    IQ Trend Over Time
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="iqGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="hsl(190, 100%, 50%)" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="hsl(190, 100%, 50%)" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(228, 10%, 20%)" />
+                        <XAxis 
+                          dataKey="name" 
+                          stroke="hsl(215, 20%, 65%)" 
+                          fontSize={12}
+                          tickLine={false}
+                        />
+                        <YAxis 
+                          domain={['dataMin - 10', 'dataMax + 10']} 
+                          stroke="hsl(215, 20%, 65%)" 
+                          fontSize={12}
+                          tickLine={false}
+                        />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: 'hsl(228, 12%, 10%)', 
+                            border: '1px solid hsl(228, 10%, 20%)',
+                            borderRadius: '8px',
+                            color: 'hsl(210, 40%, 98%)'
+                          }}
+                          formatter={(value: number) => [`IQ: ${value}`, '']}
+                          labelFormatter={(label) => `Date: ${label}`}
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="iq" 
+                          stroke="hsl(190, 100%, 50%)" 
+                          strokeWidth={2}
+                          fill="url(#iqGradient)"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
             )}
 
             {/* Test History */}
