@@ -107,6 +107,63 @@ export function useChallenges() {
     }
   }, [user, fetchChallenges]);
 
+  // Check and complete challenges based on test results
+  const checkAndCompleteFromResults = useCallback(async (moduleScores: Record<string, number>): Promise<{ completed: string[], passed: string[] }> => {
+    if (!user) return { completed: [], passed: [] };
+
+    const completed: string[] = [];
+    const passed: string[] = [];
+
+    // Fetch current challenges first
+    const today = new Date().toISOString().split('T')[0];
+    const { data: challengeData } = await supabase
+      .from('weekly_challenges')
+      .select('*')
+      .lte('week_start', today)
+      .gte('week_end', today);
+
+    if (!challengeData) return { completed, passed };
+
+    for (const challenge of challengeData) {
+      const score = moduleScores[challenge.module];
+      if (score !== undefined) {
+        // Check existing completion
+        const { data: existing } = await supabase
+          .from('challenge_completions')
+          .select('score')
+          .eq('user_id', user.id)
+          .eq('challenge_id', challenge.id)
+          .maybeSingle();
+
+        // Only update if new score is better or no existing completion
+        if (!existing || score > Number(existing.score)) {
+          const { error } = await supabase
+            .from('challenge_completions')
+            .upsert({
+              user_id: user.id,
+              challenge_id: challenge.id,
+              score,
+              completed_at: new Date().toISOString(),
+            }, {
+              onConflict: 'user_id,challenge_id'
+            });
+
+          if (!error) {
+            completed.push(challenge.title);
+            if (score >= challenge.target_score) {
+              passed.push(challenge.title);
+            }
+          }
+        }
+      }
+    }
+
+    // Refresh challenges state
+    await fetchChallenges();
+    
+    return { completed, passed };
+  }, [user, fetchChallenges]);
+
   const getChallengeStats = useCallback(() => {
     const total = challenges.length;
     const completed = challenges.filter(c => c.isCompleted).length;
@@ -133,6 +190,7 @@ export function useChallenges() {
     error,
     fetchChallenges,
     completeChallenge,
+    checkAndCompleteFromResults,
     getChallengeStats,
   };
 }

@@ -6,8 +6,9 @@ import { Progress } from '@/components/ui/progress';
 import { useTest } from '@/context/TestContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTestHistory } from '@/hooks/useTestHistory';
+import { useChallenges } from '@/hooks/useChallenges';
 import { MODULES } from '@/types/questions';
-import { Share2, Crown, RotateCcw, Download, Brain, Zap, Target, Boxes, Loader2, Check, TrendingUp } from 'lucide-react';
+import { Share2, Crown, RotateCcw, Download, Brain, Zap, Target, Boxes, Loader2, Check, TrendingUp, Flame } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { generatePDFReport } from '@/lib/pdfGenerator';
@@ -16,10 +17,12 @@ export function ResultsScreen() {
   const { result, resetTest } = useTest();
   const { user, isPremium, checkPremiumStatus } = useAuth();
   const { saveResult } = useTestHistory();
+  const { checkAndCompleteFromResults } = useChallenges();
   const [isLoading, setIsLoading] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const hasSavedResult = useRef(false);
+  const hasCheckedChallenges = useRef(false);
 
   // Check for payment success in URL
   useEffect(() => {
@@ -45,6 +48,30 @@ export function ResultsScreen() {
       });
     }
   }, [result, user, isPremium, saveResult]);
+
+  // Auto-update challenges based on module scores
+  useEffect(() => {
+    if (result && user && isPremium && !hasCheckedChallenges.current) {
+      hasCheckedChallenges.current = true;
+      
+      // Build module scores map
+      const moduleScores: Record<string, number> = {};
+      result.moduleResults.forEach((mr) => {
+        moduleScores[mr.module] = mr.percentageScore;
+      });
+
+      checkAndCompleteFromResults(moduleScores).then(({ passed }) => {
+        if (passed.length > 0) {
+          toast.success(
+            <div className="flex items-center gap-2">
+              <Flame className="w-4 h-4 text-secondary" />
+              <span>Challenge passed: {passed[0]}{passed.length > 1 ? ` +${passed.length - 1} more` : ''}</span>
+            </div>
+          );
+        }
+      });
+    }
+  }, [result, user, isPremium, checkAndCompleteFromResults]);
 
   if (!result) return null;
 
