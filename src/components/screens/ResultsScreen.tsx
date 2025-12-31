@@ -12,6 +12,7 @@ import { Share2, Crown, RotateCcw, Download, Brain, Zap, Target, Boxes, Loader2,
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { generatePDFReport } from '@/lib/pdfGenerator';
+import { trackEvent } from '@/lib/analytics';
 
 export function ResultsScreen() {
   const { result, resetTest } = useTest();
@@ -28,10 +29,12 @@ export function ResultsScreen() {
   useEffect(() => {
     const paymentStatus = searchParams.get('payment');
     if (paymentStatus === 'success') {
+      trackEvent('premium_purchase_completed', { price: 6.99, currency: 'USD' });
       toast.success('Payment successful! Premium features unlocked.');
       checkPremiumStatus();
       navigate('/', { replace: true });
     } else if (paymentStatus === 'cancelled') {
+      trackEvent('premium_purchase_cancelled');
       toast.info('Payment cancelled');
       navigate('/', { replace: true });
     }
@@ -77,24 +80,29 @@ export function ResultsScreen() {
 
   const handleUnlockPremium = async () => {
     if (!user) {
+      trackEvent('premium_unlock_clicked', { user_authenticated: false });
       navigate('/auth');
       return;
     }
 
+    trackEvent('premium_unlock_clicked', { user_authenticated: true });
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('create-payment');
       
       if (error) {
+        trackEvent('premium_payment_error', { error_type: 'create_session_failed' });
         toast.error('Failed to create payment session');
         console.error('Payment error:', error);
         return;
       }
 
       if (data?.url) {
+        trackEvent('premium_checkout_opened');
         window.open(data.url, '_blank');
       }
     } catch (err) {
+      trackEvent('premium_payment_error', { error_type: 'unknown' });
       toast.error('Something went wrong');
       console.error('Payment error:', err);
     } finally {
@@ -283,6 +291,7 @@ export function ResultsScreen() {
               disabled={!isPremium}
               onClick={() => {
                 if (isPremium && result) {
+                  trackEvent('pdf_report_downloaded', { iq_score: result.iqBase });
                   generatePDFReport({ result, userName: user?.email });
                   toast.success('PDF report downloaded!');
                 }
