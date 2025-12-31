@@ -20,10 +20,30 @@ export function ResultsScreen() {
   const { saveResult } = useTestHistory();
   const { checkAndCompleteFromResults } = useChallenges();
   const [isLoading, setIsLoading] = useState(false);
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const hasSavedResult = useRef(false);
   const hasCheckedChallenges = useRef(false);
+
+  // Fetch user profile for display name
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user) return;
+      
+      const { data } = await supabase
+        .from('profiles')
+        .select('display_name')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (data?.display_name) {
+        setDisplayName(data.display_name);
+      }
+    };
+    
+    fetchProfile();
+  }, [user]);
 
   // Check for payment success in URL
   useEffect(() => {
@@ -295,7 +315,7 @@ export function ResultsScreen() {
               onClick={() => {
                 if (isPremium && result) {
                   trackEvent('pdf_report_downloaded', { iq_score: result.iqBase });
-                  generatePDFReport({ result, userName: user?.email });
+                  generatePDFReport({ result, userName: displayName || user?.email });
                   toast.success('PDF report downloaded!');
                 }
               }}
