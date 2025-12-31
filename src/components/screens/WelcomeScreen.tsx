@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useTest } from '@/context/TestContext';
@@ -461,6 +461,14 @@ export function WelcomeScreen() {
           <p className="text-muted-foreground text-sm mb-4">
             The most trusted free online IQ test. Measure your cognitive abilities today.
           </p>
+          <nav className="flex items-center justify-center gap-6 mb-4" aria-label="Legal links">
+            <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Terms of Service
+            </Link>
+          </nav>
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Thorpe IQ Test. All rights reserved.
           </p>
