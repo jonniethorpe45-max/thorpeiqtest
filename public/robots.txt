@@ -10,5 +10,14 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+# Thorpe IQ Test - robots.txt
 User-agent: *
 Allow: /
+Disallow: /auth
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://thorpe-iq-test.lovable.app/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
