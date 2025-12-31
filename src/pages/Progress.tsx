@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,11 +7,16 @@ import { useTestHistory, SavedTestResult } from '@/hooks/useTestHistory';
 import { Brain, TrendingUp, TrendingDown, Minus, Trophy, Calendar, ArrowLeft, Crown, Loader2, BarChart3, Boxes, Target, Zap } from 'lucide-react';
 import { format } from 'date-fns';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { trackPageView } from '@/lib/analytics';
 
 export default function Progress() {
   const navigate = useNavigate();
   const { user, isPremium, isLoading: authLoading } = useAuth();
   const { history, isLoading, getProgressStats } = useTestHistory();
+
+  useEffect(() => {
+    trackPageView('Progress');
+  }, []);
 
   if (authLoading || isLoading) {
     return (
