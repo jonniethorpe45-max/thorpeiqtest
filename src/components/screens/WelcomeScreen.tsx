@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useTest } from '@/context/TestContext';
 import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Brain, Sparkles, Target, Zap, User, LogOut, Crown, TrendingUp, Flame,
   Clock, Shield, Award, ChevronRight, CheckCircle2, BarChart3, Users, Star
@@ -19,6 +20,29 @@ export function WelcomeScreen() {
   const { startTest } = useTest();
   const { user, isPremium, signOut } = useAuth();
   const navigate = useNavigate();
+  const [displayName, setDisplayName] = useState<string | null>(null);
+
+  // Fetch user profile for display name
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user) {
+        setDisplayName(null);
+        return;
+      }
+      
+      const { data } = await supabase
+        .from('profiles')
+        .select('display_name')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (data?.display_name) {
+        setDisplayName(data.display_name);
+      }
+    };
+    
+    fetchProfile();
+  }, [user]);
 
   const scrollToTest = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -59,14 +83,19 @@ export function WelcomeScreen() {
                   </div>
                 </>
               )}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/50 border border-border/50">
+                <User className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm text-foreground font-medium">
+                  {displayName || user.email?.split('@')[0]}
+                </span>
+              </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => signOut()}
                 className="text-muted-foreground hover:text-foreground"
               >
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
+                <LogOut className="w-4 h-4" />
               </Button>
             </>
           ) : (
