@@ -1,14 +1,51 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useTest } from '@/context/TestContext';
-import { Brain, Sparkles, Target, Zap } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { Brain, Sparkles, Target, Zap, User, LogOut, Crown } from 'lucide-react';
 
 export function WelcomeScreen() {
   const { startTest } = useTest();
+  const { user, isPremium, signOut } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-hero flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      {/* Auth buttons */}
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+        {user ? (
+          <>
+            {isPremium && (
+              <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-secondary/20 border border-secondary/30">
+                <Crown className="w-4 h-4 text-secondary" />
+                <span className="text-xs text-secondary font-medium">Premium</span>
+              </div>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => signOut()}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/auth')}
+            className="border-border/50"
+          >
+            <User className="w-4 h-4 mr-2" />
+            Sign In
+          </Button>
+        )}
+      </div>
+
       {/* Background effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_hsl(var(--primary)/0.15)_0%,_transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_hsl(var(--accent)/0.1)_0%,_transparent_40%)]" />
