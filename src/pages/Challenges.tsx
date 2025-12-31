@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,7 @@ import {
   Flame
 } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
+import { trackPageView } from '@/lib/analytics';
 
 const moduleIcons: Record<string, React.ReactNode> = {
   pattern: <Brain className="w-6 h-6" />,
@@ -44,6 +45,10 @@ export default function Challenges() {
   const navigate = useNavigate();
   const { user, isPremium, isLoading: authLoading } = useAuth();
   const { challenges, isLoading, getChallengeStats } = useChallenges();
+
+  useEffect(() => {
+    trackPageView('Challenges');
+  }, []);
 
   if (authLoading || isLoading) {
     return (
