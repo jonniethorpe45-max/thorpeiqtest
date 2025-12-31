@@ -63,6 +63,7 @@ export const zh: Record<string, string> = {
   'iqScale.lowAverage': '中下',
   'iqScale.belowAverage': '低于平均',
   'faq.title': '常见问题',
+  'faq.subtitle': '获取有关Thorpe智商测试的常见问题答案',
   'faq.q1': '智商测试需要多长时间？',
   'faq.a1': 'Thorpe智商测试大约需要10-12分钟。它由4个模块组成，测试不同的认知能力。',
   'faq.q2': '智商测试免费吗？',
