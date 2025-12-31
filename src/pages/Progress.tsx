@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { useTestHistory, SavedTestResult } from '@/hooks/useTestHistory';
-import { Brain, TrendingUp, TrendingDown, Minus, Trophy, Calendar, ArrowLeft, Crown, Loader2, BarChart3 } from 'lucide-react';
+import { Brain, TrendingUp, TrendingDown, Minus, Trophy, Calendar, ArrowLeft, Crown, Loader2, BarChart3, Boxes, Target, Zap } from 'lucide-react';
 import { format } from 'date-fns';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 
@@ -62,9 +62,20 @@ export default function Progress() {
         name: format(new Date(result.completed_at), 'MMM d'),
         iq: result.iq_base,
         overall: Math.round(result.overall_score),
+        pattern: result.pattern_score ? Math.round(result.pattern_score) : null,
+        spatial: result.spatial_score ? Math.round(result.spatial_score) : null,
+        memory: result.memory_score ? Math.round(result.memory_score) : null,
+        speed: result.speed_score ? Math.round(result.speed_score) : null,
         test: index + 1,
       }));
   }, [history]);
+
+  const moduleChartConfig = [
+    { key: 'pattern', name: 'Pattern Reasoning', color: 'hsl(190, 100%, 50%)', icon: Brain },
+    { key: 'spatial', name: 'Spatial Logic', color: 'hsl(270, 80%, 60%)', icon: Boxes },
+    { key: 'memory', name: 'Working Memory', color: 'hsl(43, 100%, 50%)', icon: Target },
+    { key: 'speed', name: 'Processing Speed', color: 'hsl(122, 39%, 49%)', icon: Zap },
+  ];
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
@@ -183,6 +194,82 @@ export default function Progress() {
                         />
                       </AreaChart>
                     </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Module Breakdown Charts */}
+            {history.length >= 2 && (
+              <Card variant="glass">
+                <CardHeader>
+                  <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
+                    <Brain className="w-5 h-5 text-primary" />
+                    Cognitive Module Trends
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {moduleChartConfig.map((module) => {
+                      const Icon = module.icon;
+                      const hasData = chartData.some(d => d[module.key as keyof typeof d] !== null);
+                      
+                      if (!hasData) return null;
+                      
+                      return (
+                        <div key={module.key} className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Icon className="w-4 h-4" style={{ color: module.color }} />
+                            <span className="text-sm font-medium text-foreground">{module.name}</span>
+                          </div>
+                          <div className="h-40 w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                                <defs>
+                                  <linearGradient id={`${module.key}Gradient`} x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor={module.color} stopOpacity={0.3} />
+                                    <stop offset="95%" stopColor={module.color} stopOpacity={0} />
+                                  </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" stroke="hsl(228, 10%, 20%)" />
+                                <XAxis 
+                                  dataKey="name" 
+                                  stroke="hsl(215, 20%, 65%)" 
+                                  fontSize={10}
+                                  tickLine={false}
+                                />
+                                <YAxis 
+                                  domain={[0, 100]} 
+                                  stroke="hsl(215, 20%, 65%)" 
+                                  fontSize={10}
+                                  tickLine={false}
+                                  ticks={[0, 50, 100]}
+                                />
+                                <Tooltip 
+                                  contentStyle={{ 
+                                    backgroundColor: 'hsl(228, 12%, 10%)', 
+                                    border: '1px solid hsl(228, 10%, 20%)',
+                                    borderRadius: '8px',
+                                    color: 'hsl(210, 40%, 98%)',
+                                    fontSize: '12px'
+                                  }}
+                                  formatter={(value: number) => [`${value}%`, module.name]}
+                                  labelFormatter={(label) => `${label}`}
+                                />
+                                <Area 
+                                  type="monotone" 
+                                  dataKey={module.key}
+                                  stroke={module.color}
+                                  strokeWidth={2}
+                                  fill={`url(#${module.key}Gradient)`}
+                                  connectNulls
+                                />
+                              </AreaChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>
