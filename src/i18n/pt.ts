@@ -63,6 +63,7 @@ export const pt: Record<string, string> = {
   'iqScale.lowAverage': 'Média Baixa',
   'iqScale.belowAverage': 'Abaixo da Média',
   'faq.title': 'Perguntas Frequentes',
+  'faq.subtitle': 'Obtenha respostas para perguntas comuns sobre o Teste de QI Thorpe',
   'faq.q1': 'Quanto tempo leva o teste de QI?',
   'faq.a1': 'O Teste de QI Thorpe leva aproximadamente 10-12 minutos. Consiste em 4 módulos testando diferentes capacidades cognitivas.',
   'faq.q2': 'O teste de QI é grátis?',

@@ -63,6 +63,7 @@ export const ja: Record<string, string> = {
   'iqScale.lowAverage': '平均より下',
   'iqScale.belowAverage': '平均以下',
   'faq.title': 'よくある質問',
+  'faq.subtitle': 'Thorpe IQテストに関するよくある質問への回答をご覧ください',
   'faq.q1': 'IQテストはどのくらい時間がかかりますか？',
   'faq.a1': 'Thorpe IQテストは約10-12分かかります。異なる認知能力をテストする4つのモジュールで構成されています。',
   'faq.q2': 'IQテストは無料ですか？',

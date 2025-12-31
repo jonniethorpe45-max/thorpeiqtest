@@ -63,6 +63,7 @@ export const de: Record<string, string> = {
   'iqScale.lowAverage': 'Niedriger Durchschnitt',
   'iqScale.belowAverage': 'Unter dem Durchschnitt',
   'faq.title': 'Häufig Gestellte Fragen',
+  'faq.subtitle': 'Antworten auf häufige Fragen zum Thorpe IQ-Test erhalten',
   'faq.q1': 'Wie lange dauert der IQ-Test?',
   'faq.a1': 'Der Thorpe IQ-Test dauert etwa 10-12 Minuten. Er besteht aus 4 Modulen, die verschiedene kognitive Fähigkeiten testen.',
   'faq.q2': 'Ist der IQ-Test kostenlos?',

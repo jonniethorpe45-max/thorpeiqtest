@@ -80,6 +80,7 @@ export const es: Record<string, string> = {
   
   // FAQ
   'faq.title': 'Preguntas Frecuentes',
+  'faq.subtitle': 'Obtén respuestas a preguntas comunes sobre el Test de CI Thorpe',
   'faq.q1': '¿Cuánto tiempo toma el test de IQ?',
   'faq.a1': 'El Test de IQ Thorpe toma aproximadamente 10-12 minutos. Consiste en 4 módulos, cada uno evaluando diferentes capacidades cognitivas.',
   'faq.q2': '¿El test de IQ es gratis?',

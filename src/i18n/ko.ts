@@ -63,6 +63,7 @@ export const ko: Record<string, string> = {
   'iqScale.lowAverage': '평균 이하',
   'iqScale.belowAverage': '평균 미만',
   'faq.title': '자주 묻는 질문',
+  'faq.subtitle': 'Thorpe IQ 테스트에 대한 일반적인 질문에 대한 답변을 얻으세요',
   'faq.q1': 'IQ 테스트는 얼마나 걸리나요?',
   'faq.a1': 'Thorpe IQ 테스트는 약 10-12분이 소요됩니다. 다양한 인지 능력을 테스트하는 4개 모듈로 구성됩니다.',
   'faq.q2': 'IQ 테스트는 무료인가요?',
