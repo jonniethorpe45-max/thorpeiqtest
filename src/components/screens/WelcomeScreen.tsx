@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useTest } from '@/context/TestContext';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   Brain, Sparkles, Target, Zap, User, LogOut, Crown, TrendingUp, Flame,
@@ -21,6 +22,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 export function WelcomeScreen() {
   const { startTest } = useTest();
   const { user, isPremium, signOut } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -76,7 +78,7 @@ export function WelcomeScreen() {
                     className="text-secondary hover:text-secondary/80"
                   >
                     <Flame className="w-4 h-4 mr-2" />
-                    Challenges
+                    {t('nav.challenges')}
                   </Button>
                   <Button
                     variant="ghost"
@@ -85,11 +87,11 @@ export function WelcomeScreen() {
                     className="text-primary hover:text-primary/80"
                   >
                     <TrendingUp className="w-4 h-4 mr-2" />
-                    Progress
+                    {t('nav.progress')}
                   </Button>
                   <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-secondary/20 border border-secondary/30">
                     <Crown className="w-4 h-4 text-secondary" />
-                    <span className="text-xs text-secondary font-medium">Premium</span>
+                    <span className="text-xs text-secondary font-medium">{t('nav.premium')}</span>
                   </div>
                 </>
               )}
@@ -121,7 +123,7 @@ export function WelcomeScreen() {
               className="border-border/50"
             >
               <User className="w-4 h-4 mr-2" />
-              Sign In
+              {t('nav.signIn')}
             </Button>
           )}
         </nav>
@@ -148,11 +150,11 @@ export function WelcomeScreen() {
           {/* Title */}
           <div className="space-y-4 animate-slide-up">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-              <span className="text-gradient-primary">Thorpe</span>
-              <span className="text-foreground"> IQ Test</span>
+              <span className="text-gradient-primary">{t('hero.title1')}</span>
+              <span className="text-foreground"> {t('hero.title2')}</span>
             </h1>
             <p className="text-muted-foreground text-lg md:text-xl max-w-md mx-auto">
-              Take the most accurate online IQ test and discover your true cognitive potential in just 10 minutes
+              {t('hero.subtitle')}
             </p>
           </div>
 
@@ -160,19 +162,19 @@ export function WelcomeScreen() {
           <div className="grid grid-cols-2 gap-4 my-8 animate-slide-up stagger-2">
             <Card variant="glass" className="p-4 flex flex-col items-center gap-2">
               <Target className="w-6 h-6 text-primary" />
-              <span className="text-sm text-muted-foreground">4 Cognitive Modules</span>
+              <span className="text-sm text-muted-foreground">{t('features.modules')}</span>
             </Card>
             <Card variant="glass" className="p-4 flex flex-col items-center gap-2">
               <Clock className="w-6 h-6 text-secondary" />
-              <span className="text-sm text-muted-foreground">10-12 Minutes</span>
+              <span className="text-sm text-muted-foreground">{t('features.time')}</span>
             </Card>
             <Card variant="glass" className="p-4 flex flex-col items-center gap-2">
               <Brain className="w-6 h-6 text-accent" />
-              <span className="text-sm text-muted-foreground">Adaptive Testing</span>
+              <span className="text-sm text-muted-foreground">{t('features.adaptive')}</span>
             </Card>
             <Card variant="glass" className="p-4 flex flex-col items-center gap-2">
               <Sparkles className="w-6 h-6 text-primary" />
-              <span className="text-sm text-muted-foreground">Instant Results</span>
+              <span className="text-sm text-muted-foreground">{t('features.instant')}</span>
             </Card>
           </div>
 
@@ -184,11 +186,11 @@ export function WelcomeScreen() {
               className="w-full group"
               onClick={startTest}
             >
-              Start Free IQ Test
+              {t('hero.cta')}
               <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
             <p className="text-xs text-muted-foreground">
-              ✓ Free assessment • ✓ No registration required • ✓ Get results instantly
+              {t('hero.ctaSubtext')}
             </p>
           </div>
 
@@ -196,15 +198,15 @@ export function WelcomeScreen() {
           <div className="flex items-center justify-center gap-6 pt-4 text-muted-foreground animate-slide-up stagger-4">
             <div className="flex items-center gap-1.5">
               <Users className="w-4 h-4" />
-              <span className="text-xs">500K+ Tests</span>
+              <span className="text-xs">{t('trust.tests')}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Star className="w-4 h-4 text-secondary" />
-              <span className="text-xs">4.8/5 Rating</span>
+              <span className="text-xs">{t('trust.rating')}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Shield className="w-4 h-4" />
-              <span className="text-xs">Secure</span>
+              <span className="text-xs">{t('trust.secure')}</span>
             </div>
           </div>
         </div>
@@ -214,12 +216,10 @@ export function WelcomeScreen() {
       <section className="py-20 px-6 bg-card/50" aria-labelledby="what-is-iq">
         <div className="max-w-4xl mx-auto">
           <h2 id="what-is-iq" className="text-3xl md:text-4xl font-bold text-center mb-6">
-            What is an <span className="text-gradient-primary">IQ Test</span>?
+            {t('whatIsIQ.title')} <span className="text-gradient-primary">{t('whatIsIQ.titleHighlight')}</span>?
           </h2>
           <p className="text-muted-foreground text-center text-lg max-w-2xl mx-auto mb-12">
-            An Intelligence Quotient (IQ) test measures cognitive abilities and intellectual potential. 
-            The Thorpe IQ Test evaluates four key areas of mental ability to provide a comprehensive 
-            assessment of your cognitive strengths.
+            {t('whatIsIQ.description')}
           </p>
           
           <div className="grid md:grid-cols-2 gap-6">
@@ -229,9 +229,9 @@ export function WelcomeScreen() {
                   <Brain className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg mb-2">Pattern Recognition</h3>
+                  <h3 className="font-semibold text-lg mb-2">{t('whatIsIQ.pattern')}</h3>
                   <p className="text-muted-foreground text-sm">
-                    Evaluate your ability to identify logical patterns and sequences in visual data.
+                    {t('whatIsIQ.patternDesc')}
                   </p>
                 </div>
               </div>
@@ -243,9 +243,9 @@ export function WelcomeScreen() {
                   <Zap className="w-6 h-6 text-secondary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg mb-2">Processing Speed</h3>
+                  <h3 className="font-semibold text-lg mb-2">{t('whatIsIQ.speed')}</h3>
                   <p className="text-muted-foreground text-sm">
-                    Measure how quickly and accurately you can process information under time pressure.
+                    {t('whatIsIQ.speedDesc')}
                   </p>
                 </div>
               </div>
@@ -257,9 +257,9 @@ export function WelcomeScreen() {
                   <Target className="w-6 h-6 text-accent" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg mb-2">Spatial Reasoning</h3>
+                  <h3 className="font-semibold text-lg mb-2">{t('whatIsIQ.spatial')}</h3>
                   <p className="text-muted-foreground text-sm">
-                    Assess your capacity to visualize and manipulate objects in three-dimensional space.
+                    {t('whatIsIQ.spatialDesc')}
                   </p>
                 </div>
               </div>
@@ -271,9 +271,9 @@ export function WelcomeScreen() {
                   <BarChart3 className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg mb-2">Working Memory</h3>
+                  <h3 className="font-semibold text-lg mb-2">{t('whatIsIQ.memory')}</h3>
                   <p className="text-muted-foreground text-sm">
-                    Test your ability to hold and manipulate information in short-term memory.
+                    {t('whatIsIQ.memoryDesc')}
                   </p>
                 </div>
               </div>
@@ -286,18 +286,18 @@ export function WelcomeScreen() {
       <section className="py-20 px-6" aria-labelledby="how-it-works">
         <div className="max-w-4xl mx-auto">
           <h2 id="how-it-works" className="text-3xl md:text-4xl font-bold text-center mb-4">
-            How the Thorpe IQ Test Works
+            {t('howItWorks.title')}
           </h2>
           <p className="text-muted-foreground text-center text-lg max-w-2xl mx-auto mb-12">
-            Complete four scientifically-designed modules and receive your personalized IQ score
+            {t('howItWorks.subtitle')}
           </p>
           
           <div className="space-y-6">
             {[
-              { step: 1, title: "Start the Test", desc: "Begin with a brief introduction to understand the test format. No registration required." },
-              { step: 2, title: "Complete 4 Modules", desc: "Answer questions across pattern recognition, processing speed, spatial reasoning, and memory." },
-              { step: 3, title: "Adaptive Difficulty", desc: "Questions adjust based on your performance for accurate measurement across all skill levels." },
-              { step: 4, title: "Get Your Results", desc: "Receive your IQ score with detailed breakdown of cognitive strengths and percentile ranking." },
+              { step: 1, title: t('howItWorks.step1.title'), desc: t('howItWorks.step1.desc') },
+              { step: 2, title: t('howItWorks.step2.title'), desc: t('howItWorks.step2.desc') },
+              { step: 3, title: t('howItWorks.step3.title'), desc: t('howItWorks.step3.desc') },
+              { step: 4, title: t('howItWorks.step4.title'), desc: t('howItWorks.step4.desc') },
             ].map((item) => (
               <div key={item.step} className="flex items-start gap-4">
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground font-bold">
@@ -317,20 +317,20 @@ export function WelcomeScreen() {
       <section className="py-20 px-6 bg-card/50" aria-labelledby="benefits">
         <div className="max-w-4xl mx-auto">
           <h2 id="benefits" className="text-3xl md:text-4xl font-bold text-center mb-4">
-            Why Take the Thorpe IQ Test?
+            {t('benefits.title')}
           </h2>
           <p className="text-muted-foreground text-center text-lg max-w-2xl mx-auto mb-12">
-            Trusted by over 500,000 users worldwide for accurate cognitive assessment
+            {t('benefits.subtitle')}
           </p>
           
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: Shield, title: "Scientifically Validated", desc: "Based on established psychometric principles and cognitive research" },
-              { icon: Clock, title: "Quick & Convenient", desc: "Complete the entire test in just 10-12 minutes from any device" },
-              { icon: Award, title: "Detailed Results", desc: "Get comprehensive breakdown with percentile rankings and module scores" },
-              { icon: Zap, title: "Instant Feedback", desc: "Receive your IQ score immediately after completing the test" },
-              { icon: Users, title: "Compare Globally", desc: "See how you rank against test-takers from around the world" },
-              { icon: CheckCircle2, title: "100% Free", desc: "No hidden fees or registration required to take the full test" },
+              { icon: Shield, title: t('benefits.validated'), desc: t('benefits.validatedDesc') },
+              { icon: Clock, title: t('benefits.quick'), desc: t('benefits.quickDesc') },
+              { icon: Award, title: t('benefits.detailed'), desc: t('benefits.detailedDesc') },
+              { icon: Zap, title: t('benefits.instantFeedback'), desc: t('benefits.instantFeedbackDesc') },
+              { icon: Users, title: t('benefits.global'), desc: t('benefits.globalDesc') },
+              { icon: CheckCircle2, title: t('benefits.free'), desc: t('benefits.freeDesc') },
             ].map((item, i) => (
               <Card key={i} className="p-6 bg-background border-border/50 text-center">
                 <div className="inline-flex p-3 rounded-xl bg-primary/10 mb-4">
@@ -348,50 +348,50 @@ export function WelcomeScreen() {
       <section className="py-20 px-6" aria-labelledby="iq-scale">
         <div className="max-w-4xl mx-auto">
           <h2 id="iq-scale" className="text-3xl md:text-4xl font-bold text-center mb-4">
-            Understanding IQ Scores
+            {t('iqScale.title')}
           </h2>
           <p className="text-muted-foreground text-center text-lg max-w-2xl mx-auto mb-12">
-            IQ scores follow a normal distribution with 100 as the average
+            {t('iqScale.subtitle')}
           </p>
           
           <Card className="p-6 bg-gradient-card border-border/50 overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left py-3 px-4 font-semibold">IQ Range</th>
-                  <th className="text-left py-3 px-4 font-semibold">Classification</th>
-                  <th className="text-left py-3 px-4 font-semibold">Percentile</th>
+                  <th className="text-left py-3 px-4 font-semibold">{t('iqScale.range')}</th>
+                  <th className="text-left py-3 px-4 font-semibold">{t('iqScale.classification')}</th>
+                  <th className="text-left py-3 px-4 font-semibold">{t('iqScale.percentile')}</th>
                 </tr>
               </thead>
               <tbody className="text-muted-foreground">
                 <tr className="border-b border-border/50">
                   <td className="py-3 px-4">130+</td>
-                  <td className="py-3 px-4 text-primary font-medium">Very Superior</td>
+                  <td className="py-3 px-4 text-primary font-medium">{t('iqScale.verySuperior')}</td>
                   <td className="py-3 px-4">Top 2%</td>
                 </tr>
                 <tr className="border-b border-border/50">
                   <td className="py-3 px-4">120-129</td>
-                  <td className="py-3 px-4 text-secondary font-medium">Superior</td>
+                  <td className="py-3 px-4 text-secondary font-medium">{t('iqScale.superior')}</td>
                   <td className="py-3 px-4">Top 9%</td>
                 </tr>
                 <tr className="border-b border-border/50">
                   <td className="py-3 px-4">110-119</td>
-                  <td className="py-3 px-4">High Average</td>
+                  <td className="py-3 px-4">{t('iqScale.highAverage')}</td>
                   <td className="py-3 px-4">Top 25%</td>
                 </tr>
                 <tr className="border-b border-border/50">
                   <td className="py-3 px-4">90-109</td>
-                  <td className="py-3 px-4">Average</td>
+                  <td className="py-3 px-4">{t('iqScale.average')}</td>
                   <td className="py-3 px-4">25th-75th</td>
                 </tr>
                 <tr className="border-b border-border/50">
                   <td className="py-3 px-4">80-89</td>
-                  <td className="py-3 px-4">Low Average</td>
+                  <td className="py-3 px-4">{t('iqScale.lowAverage')}</td>
                   <td className="py-3 px-4">Bottom 25%</td>
                 </tr>
                 <tr>
                   <td className="py-3 px-4">Below 80</td>
-                  <td className="py-3 px-4">Below Average</td>
+                  <td className="py-3 px-4">{t('iqScale.belowAverage')}</td>
                   <td className="py-3 px-4">Bottom 9%</td>
                 </tr>
               </tbody>
@@ -404,66 +404,46 @@ export function WelcomeScreen() {
       <section className="py-20 px-6 bg-card/50" aria-labelledby="faq">
         <div className="max-w-3xl mx-auto">
           <h2 id="faq" className="text-3xl md:text-4xl font-bold text-center mb-4">
-            Frequently Asked Questions
+            {t('faq.title')}
           </h2>
           <p className="text-muted-foreground text-center text-lg mb-12">
-            Everything you need to know about the Thorpe IQ Test
+            {t('faq.subtitle') || 'Everything you need to know about the Thorpe IQ Test'}
           </p>
           
           <Accordion type="single" collapsible className="space-y-4">
             <AccordionItem value="item-1" className="bg-background border border-border/50 rounded-lg px-6">
               <AccordionTrigger className="text-left font-medium hover:no-underline">
-                How accurate is the Thorpe IQ Test?
+                {t('faq.q3')}
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                The Thorpe IQ Test is designed using established psychometric principles and provides 
-                a reliable estimate of cognitive ability. While no online test can replace a 
-                professionally administered assessment, our test offers a scientifically-grounded 
-                approximation of your IQ score.
+                {t('faq.a3')}
               </AccordionContent>
             </AccordionItem>
             
             <AccordionItem value="item-2" className="bg-background border border-border/50 rounded-lg px-6">
               <AccordionTrigger className="text-left font-medium hover:no-underline">
-                How long does the test take to complete?
+                {t('faq.q1')}
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                The complete test takes approximately 10-12 minutes. It consists of four modules 
-                covering pattern recognition, processing speed, spatial reasoning, and working memory. 
-                Each module contains timed questions designed to assess your cognitive abilities efficiently.
+                {t('faq.a1')}
               </AccordionContent>
             </AccordionItem>
             
             <AccordionItem value="item-3" className="bg-background border border-border/50 rounded-lg px-6">
               <AccordionTrigger className="text-left font-medium hover:no-underline">
-                Is the Thorpe IQ Test really free?
+                {t('faq.q2')}
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Yes, the full IQ test is completely free with no registration required. You can take 
-                the test and receive your IQ score instantly. We also offer an optional premium 
-                upgrade for detailed analysis, progress tracking, and weekly cognitive challenges.
+                {t('faq.a2')}
               </AccordionContent>
             </AccordionItem>
             
             <AccordionItem value="item-4" className="bg-background border border-border/50 rounded-lg px-6">
               <AccordionTrigger className="text-left font-medium hover:no-underline">
-                Can I retake the test to improve my score?
+                {t('faq.q4')}
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                You can retake the test, but keep in mind that IQ tests measure your general cognitive 
-                ability, which tends to be stable over time. Significant improvements from retaking 
-                the same test may reflect practice effects rather than actual cognitive gains.
-              </AccordionContent>
-            </AccordionItem>
-            
-            <AccordionItem value="item-5" className="bg-background border border-border/50 rounded-lg px-6">
-              <AccordionTrigger className="text-left font-medium hover:no-underline">
-                What does my IQ score mean?
-              </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
-                IQ scores are normalized with 100 as the average. About 68% of people score between 
-                85 and 115. Scores above 130 are considered very superior (top 2%), while scores 
-                between 110-119 represent high average intelligence (top 25%).
+                {t('faq.a4')}
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -474,11 +454,10 @@ export function WelcomeScreen() {
       <section className="py-20 px-6" aria-labelledby="cta">
         <div className="max-w-2xl mx-auto text-center">
           <h2 id="cta" className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Discover Your IQ?
+            {t('cta.title')}
           </h2>
           <p className="text-muted-foreground text-lg mb-8">
-            Join over 500,000 people who have taken the Thorpe IQ Test. 
-            It only takes 10 minutes to unlock insights about your cognitive abilities.
+            {t('cta.subtitle')}
           </p>
           <Button
             variant="hero"
@@ -486,12 +465,9 @@ export function WelcomeScreen() {
             className="group"
             onClick={scrollToTest}
           >
-            Start Your Free IQ Test Now
+            {t('hero.cta')}
             <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
-          <p className="text-xs text-muted-foreground mt-4">
-            No email required • Results in 10 minutes
-          </p>
         </div>
       </section>
 
@@ -503,18 +479,18 @@ export function WelcomeScreen() {
             <span className="font-semibold">Thorpe IQ Test</span>
           </div>
           <p className="text-muted-foreground text-sm mb-4">
-            The most trusted free online IQ test. Measure your cognitive abilities today.
+            {t('footer.disclaimer')}
           </p>
           <nav className="flex items-center justify-center gap-6 mb-4" aria-label="Legal links">
             <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Privacy Policy
+              {t('footer.privacy')}
             </Link>
             <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Terms of Service
+              {t('footer.terms')}
             </Link>
           </nav>
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Thorpe IQ Test. All rights reserved.
+            {t('footer.copyright')}
           </p>
         </div>
       </footer>

@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useTest } from '@/context/TestContext';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { useTestHistory } from '@/hooks/useTestHistory';
 import { useChallenges } from '@/hooks/useChallenges';
 import { MODULES } from '@/types/questions';
@@ -18,6 +19,7 @@ import { trackEvent } from '@/lib/analytics';
 export function ResultsScreen() {
   const { result, resetTest } = useTest();
   const { user, isPremium, checkPremiumStatus } = useAuth();
+  const { t } = useLanguage();
   const { saveResult } = useTestHistory();
   const { checkAndCompleteFromResults } = useChallenges();
   const [isLoading, setIsLoading] = useState(false);
@@ -147,13 +149,23 @@ export function ResultsScreen() {
     speed: 'text-green-400',
   };
 
+  const getModuleName = (id: string) => {
+    const moduleNames: Record<string, string> = {
+      pattern: t('modules.pattern'),
+      spatial: t('modules.spatial'),
+      memory: t('modules.memory'),
+      speed: t('modules.speed'),
+    };
+    return moduleNames[id];
+  };
+
   const getPerformanceLabel = (score: number) => {
-    if (score >= 130) return { label: 'Exceptional', color: 'text-primary' };
-    if (score >= 120) return { label: 'Superior', color: 'text-primary' };
-    if (score >= 110) return { label: 'Above Average', color: 'text-green-400' };
-    if (score >= 90) return { label: 'Average', color: 'text-secondary' };
-    if (score >= 80) return { label: 'Below Average', color: 'text-muted-foreground' };
-    return { label: 'Needs Development', color: 'text-muted-foreground' };
+    if (score >= 130) return { label: t('performance.exceptional'), color: 'text-primary' };
+    if (score >= 120) return { label: t('performance.superior'), color: 'text-primary' };
+    if (score >= 110) return { label: t('performance.aboveAverage'), color: 'text-green-400' };
+    if (score >= 90) return { label: t('performance.average'), color: 'text-secondary' };
+    if (score >= 80) return { label: t('performance.belowAverage'), color: 'text-muted-foreground' };
+    return { label: t('performance.needsDevelopment'), color: 'text-muted-foreground' };
   };
 
   const performance = getPerformanceLabel(result.iqBase);
@@ -205,7 +217,7 @@ export function ResultsScreen() {
               )}
 
               <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                Your IQ Estimate
+                {t('results.yourIQ')}
               </h2>
               
               <div className="mb-4">
@@ -221,7 +233,7 @@ export function ResultsScreen() {
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border/50">
                 <Crown className="w-4 h-4 text-secondary" />
                 <span className="text-sm">
-                  Top <span className="font-bold text-secondary">{100 - result.percentile}%</span> of test takers
+                  {t('results.topPercent')} <span className="font-bold text-secondary">{100 - result.percentile}%</span> {t('results.ofTestTakers')}
                 </span>
               </div>
             </div>
@@ -232,7 +244,7 @@ export function ResultsScreen() {
         <Card variant="glass" className="animate-slide-up stagger-1">
           <CardContent className="p-6">
             <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-4">
-              Cognitive Profile
+              {t('results.cognitiveProfile')}
             </h3>
             
             <div className="space-y-4">
@@ -248,7 +260,7 @@ export function ResultsScreen() {
                           {moduleIcons[moduleResult.module]}
                         </span>
                         <span className="text-sm font-medium text-foreground">
-                          {moduleInfo.name}
+                          {getModuleName(moduleResult.module)}
                         </span>
                       </div>
                       <span className="text-sm font-bold text-foreground">
@@ -271,12 +283,12 @@ export function ResultsScreen() {
         <Card variant="glass" className="animate-slide-up stagger-2">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-muted-foreground">Confidence Level</span>
-              <span className="text-sm font-medium text-primary">Moderate</span>
+              <span className="text-sm text-muted-foreground">{t('results.confidence')}</span>
+              <span className="text-sm font-medium text-primary">{t('results.moderate')}</span>
             </div>
             <Progress value={65} indicatorVariant="glow" />
             <p className="text-xs text-muted-foreground mt-2">
-              Based on response consistency and timing patterns
+              {t('results.confidenceDesc')}
             </p>
           </CardContent>
         </Card>
@@ -290,13 +302,13 @@ export function ResultsScreen() {
             onClick={handleShare}
           >
             <Share2 className="w-5 h-5 mr-2" />
-            Share Your Score
+            {t('results.share')}
           </Button>
 
           {isPremium ? (
             <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-secondary/20 border border-secondary/30">
               <Check className="w-5 h-5 text-secondary" />
-              <span className="text-secondary font-medium">Premium Unlocked</span>
+              <span className="text-secondary font-medium">{t('results.premiumUnlocked')}</span>
             </div>
           ) : (
             <Button
@@ -311,7 +323,7 @@ export function ResultsScreen() {
               ) : (
                 <Crown className="w-5 h-5 mr-2 text-secondary" />
               )}
-              {user ? 'Unlock Full Report — $6.99' : 'Sign in to Unlock Premium'}
+              {user ? `${t('results.unlockReport')} — $6.99` : t('results.signInToUnlock')}
             </Button>
           )}
 
@@ -323,7 +335,7 @@ export function ResultsScreen() {
               onClick={resetTest}
             >
               <RotateCcw className="w-4 h-4 mr-2" />
-              Retake
+              {t('results.retake')}
             </Button>
             <Button
               variant="outline"
@@ -339,7 +351,7 @@ export function ResultsScreen() {
               }}
             >
               <Download className="w-4 h-4 mr-2" />
-              PDF
+              {t('results.pdf')}
             </Button>
           </div>
 
@@ -351,14 +363,14 @@ export function ResultsScreen() {
               onClick={() => navigate('/progress')}
             >
               <TrendingUp className="w-4 h-4 mr-2" />
-              View Progress History
+              {t('results.viewProgress')}
             </Button>
           )}
         </div>
 
         {/* Disclaimer */}
         <p className="text-xs text-muted-foreground/70 text-center px-4 animate-fade-in stagger-4">
-          Scores are estimates and should not be used for clinical, academic, or employment decisions.
+          {t('results.disclaimer')}
         </p>
       </div>
     </div>

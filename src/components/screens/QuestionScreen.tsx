@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useTest } from '@/context/TestContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { shuffleArray } from '@/data/questions';
 
 export function QuestionScreen() {
@@ -13,6 +14,7 @@ export function QuestionScreen() {
     submitAnswer,
     currentQuestionIndex,
   } = useTest();
+  const { t } = useLanguage();
   
   const question = getCurrentQuestion();
   const module = getCurrentModule();
@@ -88,6 +90,25 @@ export function QuestionScreen() {
     speed: '⚡',
   };
 
+  const getModuleName = (id: string) => {
+    const moduleNames: Record<string, string> = {
+      pattern: t('modules.pattern'),
+      spatial: t('modules.spatial'),
+      memory: t('modules.memory'),
+      speed: t('modules.speed'),
+    };
+    return moduleNames[id] || module.name;
+  };
+
+  const getDifficultyLabel = (difficulty: string) => {
+    const labels: Record<string, string> = {
+      easy: t('question.easy'),
+      medium: t('question.medium'),
+      hard: t('question.hard'),
+    };
+    return labels[difficulty] || difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-hero flex flex-col p-4 md:p-6">
       {/* Header */}
@@ -95,7 +116,7 @@ export function QuestionScreen() {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <span className="text-xl">{moduleEmojis[module.id]}</span>
-            <span className="text-sm font-medium text-foreground">{module.name}</span>
+            <span className="text-sm font-medium text-foreground">{getModuleName(module.id)}</span>
           </div>
           <span className="text-sm text-muted-foreground">
             {progress.current} / {progress.total}
@@ -140,7 +161,7 @@ export function QuestionScreen() {
                   question.difficulty === 'medium' ? 'bg-secondary/20 text-secondary' :
                   'bg-destructive/20 text-destructive'
                 }`}>
-                  {question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1)}
+                  {getDifficultyLabel(question.difficulty)}
                 </span>
               </div>
               

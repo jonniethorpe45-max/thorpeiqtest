@@ -3,11 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useTest } from '@/context/TestContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { MODULES } from '@/types/questions';
 import { ArrowRight, Clock } from 'lucide-react';
 
 export function ModuleIntroScreen() {
   const { startModule, getCurrentModule, currentModuleIndex, getOverallProgress } = useTest();
+  const { t } = useLanguage();
   const currentModule = getCurrentModule();
   const progress = getOverallProgress();
 
@@ -27,14 +29,24 @@ export function ModuleIntroScreen() {
     speed: '2 min',
   };
 
+  const getModuleName = (id: string) => {
+    const moduleNames: Record<string, string> = {
+      pattern: t('modules.pattern'),
+      spatial: t('modules.spatial'),
+      memory: t('modules.memory'),
+      speed: t('modules.speed'),
+    };
+    return moduleNames[id] || currentModule.name;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-hero flex flex-col p-6">
       {/* Overall progress */}
       <div className="max-w-lg w-full mx-auto mb-8">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-muted-foreground">Overall Progress</span>
+          <span className="text-sm text-muted-foreground">{t('module.overallProgress')}</span>
           <span className="text-sm text-primary font-medium">
-            Module {currentModuleIndex + 1} of {MODULES.length}
+            {t('module.moduleOf').replace('{current}', String(currentModuleIndex + 1)).replace('{total}', String(MODULES.length))}
           </span>
         </div>
         <Progress 
@@ -54,7 +66,7 @@ export function ModuleIntroScreen() {
                 {moduleEmojis[currentModule.id]}
               </div>
               <h2 className="text-2xl font-bold text-foreground mb-2">
-                {currentModule.name}
+                {getModuleName(currentModule.id)}
               </h2>
               <p className="text-muted-foreground mb-6">
                 {currentModule.description}
@@ -66,7 +78,7 @@ export function ModuleIntroScreen() {
                   <span>{estimatedTime[currentModule.id]}</span>
                 </div>
                 <div className="text-muted-foreground">
-                  {currentModule.questionCount} questions
+                  {t('module.questions').replace('{count}', String(currentModule.questionCount))}
                 </div>
               </div>
             </CardContent>
@@ -97,7 +109,7 @@ export function ModuleIntroScreen() {
             className="w-full"
             onClick={startModule}
           >
-            Begin Module
+            {t('module.begin')}
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
