@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useTest } from '@/context/TestContext';
 import { useAuth } from '@/context/AuthContext';
-import { Brain, Sparkles, Target, Zap, User, LogOut, Crown, TrendingUp } from 'lucide-react';
+import { Brain, Sparkles, Target, Zap, User, LogOut, Crown, TrendingUp, Flame } from 'lucide-react';
 
 export function WelcomeScreen() {
   const { startTest } = useTest();
@@ -19,6 +19,15 @@ export function WelcomeScreen() {
           <>
             {isPremium && (
               <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate('/challenges')}
+                  className="text-secondary hover:text-secondary/80"
+                >
+                  <Flame className="w-4 h-4 mr-2" />
+                  Challenges
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"

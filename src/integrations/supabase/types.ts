@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      challenge_completions: {
+        Row: {
+          challenge_id: string
+          completed_at: string
+          id: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed_at?: string
+          id?: string
+          score: number
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed_at?: string
+          id?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_completions_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_results: {
         Row: {
           completed_at: string
@@ -59,6 +91,42 @@ export type Database = {
           spatial_score?: number | null
           speed_score?: number | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      weekly_challenges: {
+        Row: {
+          created_at: string
+          description: string
+          difficulty: string
+          id: string
+          module: string
+          target_score: number
+          title: string
+          week_end: string
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          difficulty?: string
+          id?: string
+          module: string
+          target_score?: number
+          title: string
+          week_end: string
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          difficulty?: string
+          id?: string
+          module?: string
+          target_score?: number
+          title?: string
+          week_end?: string
+          week_start?: string
         }
         Relationships: []
       }
