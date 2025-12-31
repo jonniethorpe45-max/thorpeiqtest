@@ -9,6 +9,7 @@ import { MODULES } from '@/types/questions';
 import { Share2, Crown, RotateCcw, Download, Brain, Zap, Target, Boxes, Loader2, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { generatePDFReport } from '@/lib/pdfGenerator';
 
 export function ResultsScreen() {
   const { result, resetTest } = useTest();
@@ -239,6 +240,12 @@ export function ResultsScreen() {
               size="default"
               className={`w-full ${!isPremium && 'opacity-50'}`}
               disabled={!isPremium}
+              onClick={() => {
+                if (isPremium && result) {
+                  generatePDFReport({ result, userName: user?.email });
+                  toast.success('PDF report downloaded!');
+                }
+              }}
             >
               <Download className="w-4 h-4 mr-2" />
               PDF
