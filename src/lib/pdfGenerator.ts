@@ -4,6 +4,7 @@ import { TestResult, MODULES, ModuleType } from '@/types/questions';
 interface PDFGeneratorOptions {
   result: TestResult;
   userName?: string;
+  avatarUrl?: string;
 }
 
 const COLORS = {
@@ -79,9 +80,30 @@ function drawProgressBar(doc: jsPDF, x: number, y: number, width: number, height
   doc.roundedRect(x, y, fillWidth, height, 2, 2, 'F');
 }
 
-export function generatePDFReport({ result, userName }: PDFGeneratorOptions): void {
+async function loadImageAsBase64(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
+}
+
+export async function generatePDFReport({ result, userName, avatarUrl }: PDFGeneratorOptions): Promise<void> {
   const doc = new jsPDF();
   const totalPages = 4;
+
+  // Load avatar image if available
+  let avatarBase64: string | null = null;
+  if (avatarUrl) {
+    avatarBase64 = await loadImageAsBase64(avatarUrl);
+  }
 
   // ============ PAGE 1: Cover & Summary ============
   drawHeader(doc, 1, totalPages);
@@ -95,51 +117,74 @@ export function generatePDFReport({ result, userName }: PDFGeneratorOptions): vo
   doc.setTextColor(...COLORS.muted);
   doc.text('Comprehensive Cognitive Report', 105, 62, { align: 'center' });
   
+  // Avatar and user name
+  let userInfoY = 75;
+  if (avatarBase64) {
+    try {
+      // Draw circular avatar background
+      doc.setFillColor(25, 27, 32);
+      doc.circle(105, userInfoY + 15, 18, 'F');
+      doc.setDrawColor(...COLORS.primary);
+      doc.setLineWidth(1);
+      doc.circle(105, userInfoY + 15, 18, 'S');
+      
+      // Add avatar image
+      doc.addImage(avatarBase64, 'JPEG', 90, userInfoY, 30, 30);
+      userInfoY += 38;
+    } catch {
+      // If image fails, continue without it
+    }
+  }
+  
   if (userName) {
     doc.setFontSize(12);
     doc.setTextColor(...COLORS.text);
-    doc.text(`Prepared for: ${userName}`, 105, 80, { align: 'center' });
+    doc.text(`Prepared for: ${userName}`, 105, userInfoY, { align: 'center' });
+    userInfoY += 12;
   }
   
   doc.setFontSize(10);
   doc.setTextColor(...COLORS.muted);
-  doc.text(`Assessment Date: ${result.completedAt.toLocaleDateString()}`, 105, 92, { align: 'center' });
+  doc.text(`Assessment Date: ${result.completedAt.toLocaleDateString()}`, 105, userInfoY, { align: 'center' });
+  
+  const scoreBoxY = userInfoY + 15;
   
   // Main score box
   doc.setFillColor(25, 27, 32);
-  doc.roundedRect(40, 110, 130, 70, 5, 5, 'F');
+  doc.roundedRect(40, scoreBoxY, 130, 70, 5, 5, 'F');
   doc.setDrawColor(...COLORS.primary);
   doc.setLineWidth(1);
-  doc.roundedRect(40, 110, 130, 70, 5, 5, 'S');
+  doc.roundedRect(40, scoreBoxY, 130, 70, 5, 5, 'S');
   
   doc.setFontSize(12);
   doc.setTextColor(...COLORS.muted);
-  doc.text('ESTIMATED IQ RANGE', 105, 128, { align: 'center' });
+  doc.text('ESTIMATED IQ RANGE', 105, scoreBoxY + 18, { align: 'center' });
   
   doc.setFontSize(48);
   doc.setTextColor(...COLORS.primary);
-  doc.text(`${result.iqRange.min}-${result.iqRange.max}`, 105, 155, { align: 'center' });
+  doc.text(`${result.iqRange.min}-${result.iqRange.max}`, 105, scoreBoxY + 45, { align: 'center' });
   
   doc.setFontSize(14);
   doc.setTextColor(...COLORS.secondary);
-  doc.text(getPerformanceLabel(result.iqBase), 105, 172, { align: 'center' });
+  doc.text(getPerformanceLabel(result.iqBase), 105, scoreBoxY + 62, { align: 'center' });
   
   // Percentile
   doc.setFontSize(11);
   doc.setTextColor(...COLORS.text);
-  doc.text(`You scored higher than ${result.percentile}% of the population`, 105, 200, { align: 'center' });
+  doc.text(`You scored higher than ${result.percentile}% of the population`, 105, scoreBoxY + 90, { align: 'center' });
   
   // Quick stats
+  const statsY = Math.min(scoreBoxY + 105, 225);
   doc.setFontSize(10);
   doc.setTextColor(...COLORS.muted);
-  doc.text('Key Metrics', 20, 225);
+  doc.text('Key Metrics', 20, statsY);
   doc.setDrawColor(...COLORS.muted);
-  doc.line(20, 228, 70, 228);
+  doc.line(20, statsY + 3, 70, statsY + 3);
   
   doc.setTextColor(...COLORS.text);
-  doc.text(`Overall Score: ${Math.round(result.overallScore)}%`, 20, 240);
-  doc.text(`Modules Completed: ${result.moduleResults.length}`, 20, 252);
-  doc.text(`Performance Level: ${getPerformanceLabel(result.iqBase)}`, 20, 264);
+  doc.text(`Overall Score: ${Math.round(result.overallScore)}%`, 20, statsY + 15);
+  doc.text(`Modules Completed: ${result.moduleResults.length}`, 20, statsY + 27);
+  doc.text(`Performance Level: ${getPerformanceLabel(result.iqBase)}`, 20, statsY + 39);
 
   // ============ PAGE 2: Cognitive Profile ============
   doc.addPage();
