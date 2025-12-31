@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useTest } from '@/context/TestContext';
 import { useAuth } from '@/context/AuthContext';
-import { Brain, Sparkles, Target, Zap, User, LogOut, Crown } from 'lucide-react';
+import { Brain, Sparkles, Target, Zap, User, LogOut, Crown, TrendingUp } from 'lucide-react';
 
 export function WelcomeScreen() {
   const { startTest } = useTest();
@@ -18,10 +18,21 @@ export function WelcomeScreen() {
         {user ? (
           <>
             {isPremium && (
-              <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-secondary/20 border border-secondary/30">
-                <Crown className="w-4 h-4 text-secondary" />
-                <span className="text-xs text-secondary font-medium">Premium</span>
-              </div>
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate('/progress')}
+                  className="text-primary hover:text-primary/80"
+                >
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  Progress
+                </Button>
+                <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-secondary/20 border border-secondary/30">
+                  <Crown className="w-4 h-4 text-secondary" />
+                  <span className="text-xs text-secondary font-medium">Premium</span>
+                </div>
+              </>
             )}
             <Button
               variant="ghost"
