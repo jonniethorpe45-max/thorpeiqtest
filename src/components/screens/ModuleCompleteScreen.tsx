@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useTest } from '@/context/TestContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { MODULES } from '@/types/questions';
 import { ArrowRight, CheckCircle, Target } from 'lucide-react';
 
@@ -13,6 +14,7 @@ export function ModuleCompleteScreen() {
     currentModuleIndex,
     moduleResults,
   } = useTest();
+  const { t } = useLanguage();
   
   const currentModule = getCurrentModule();
   const latestResult = moduleResults[moduleResults.length - 1];
@@ -31,6 +33,16 @@ export function ModuleCompleteScreen() {
     speed: '⚡',
   };
 
+  const getModuleName = (id: string) => {
+    const moduleNames: Record<string, string> = {
+      pattern: t('modules.pattern'),
+      spatial: t('modules.spatial'),
+      memory: t('modules.memory'),
+      speed: t('modules.speed'),
+    };
+    return moduleNames[id] || currentModule.name;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-hero flex flex-col items-center justify-center p-6">
       <div className="max-w-lg w-full space-y-6 animate-scale-in">
@@ -40,10 +52,10 @@ export function ModuleCompleteScreen() {
             <CheckCircle className="w-10 h-10 text-primary" />
           </div>
           <h2 className="text-2xl font-bold text-foreground mb-2">
-            Module Complete!
+            {t('moduleComplete.title')}
           </h2>
           <p className="text-muted-foreground">
-            {currentModule.name}
+            {getModuleName(currentModule.id)}
           </p>
         </div>
 
@@ -59,20 +71,20 @@ export function ModuleCompleteScreen() {
                 <div className="text-2xl font-bold text-foreground">
                   {correctAnswers}/{totalQuestions}
                 </div>
-                <div className="text-sm text-muted-foreground">Correct</div>
+                <div className="text-sm text-muted-foreground">{t('moduleComplete.correct')}</div>
               </div>
               <div className="text-center p-4 bg-muted/30 rounded-lg">
                 <div className="text-2xl font-bold text-primary">
                   {Math.round(accuracy)}%
                 </div>
-                <div className="text-sm text-muted-foreground">Accuracy</div>
+                <div className="text-sm text-muted-foreground">{t('moduleComplete.accuracy')}</div>
               </div>
             </div>
 
             {/* Module score bar */}
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Module Score</span>
+                <span className="text-muted-foreground">{t('moduleComplete.moduleScore')}</span>
                 <span className="text-primary font-medium">
                   {Math.round(latestResult.percentageScore)}%
                 </span>
@@ -108,12 +120,12 @@ export function ModuleCompleteScreen() {
         >
           {isLastModule ? (
             <>
-              View Results
+              {t('moduleComplete.viewResults')}
               <Target className="w-5 h-5 ml-2" />
             </>
           ) : (
             <>
-              Next Module
+              {t('moduleComplete.nextModule')}
               <ArrowRight className="w-5 h-5 ml-2" />
             </>
           )}
@@ -121,7 +133,7 @@ export function ModuleCompleteScreen() {
 
         {!isLastModule && (
           <p className="text-center text-sm text-muted-foreground">
-            {MODULES.length - currentModuleIndex - 1} modules remaining
+            {t('moduleComplete.remaining').replace('{count}', String(MODULES.length - currentModuleIndex - 1))}
           </p>
         )}
       </div>
