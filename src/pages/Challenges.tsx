@@ -19,7 +19,7 @@ import {
   Flame
 } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
-import { trackPageView } from '@/lib/analytics';
+import { trackPageView, trackEvent } from '@/lib/analytics';
 
 const moduleIcons: Record<string, React.ReactNode> = {
   pattern: <Brain className="w-6 h-6" />,
@@ -212,7 +212,13 @@ function ChallengeCard({ challenge }: { challenge: ChallengeWithStatus }) {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => navigate('/')}
+                    onClick={() => {
+                      trackEvent('challenge_retry_clicked', { 
+                        challenge_title: challenge.title, 
+                        module: challenge.module 
+                      });
+                      navigate('/');
+                    }}
                   >
                     Retry
                   </Button>
@@ -220,7 +226,15 @@ function ChallengeCard({ challenge }: { challenge: ChallengeWithStatus }) {
                   <Button 
                     variant="hero" 
                     size="sm"
-                    onClick={() => navigate('/')}
+                    onClick={() => {
+                      trackEvent('challenge_started', { 
+                        challenge_title: challenge.title, 
+                        module: challenge.module,
+                        difficulty: challenge.difficulty,
+                        target_score: challenge.target_score
+                      });
+                      navigate('/');
+                    }}
                   >
                     Start
                   </Button>
