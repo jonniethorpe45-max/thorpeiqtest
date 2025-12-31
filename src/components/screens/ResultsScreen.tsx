@@ -1,20 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useTest } from '@/context/TestContext';
+import { useAuth } from '@/context/AuthContext';
 import { MODULES } from '@/types/questions';
-import { Share2, Crown, RotateCcw, Download, Brain, Zap, Target, Boxes, Loader2 } from 'lucide-react';
+import { Share2, Crown, RotateCcw, Download, Brain, Zap, Target, Boxes, Loader2, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export function ResultsScreen() {
   const { result, resetTest } = useTest();
+  const { user, isPremium, checkPremiumStatus } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  // Check for payment success in URL
+  useEffect(() => {
+    const paymentStatus = searchParams.get('payment');
+    if (paymentStatus === 'success') {
+      toast.success('Payment successful! Premium features unlocked.');
+      checkPremiumStatus();
+      // Clear the URL params
+      navigate('/', { replace: true });
+    } else if (paymentStatus === 'cancelled') {
+      toast.info('Payment cancelled');
+      navigate('/', { replace: true });
+    }
+  }, [searchParams, checkPremiumStatus, navigate]);
 
   if (!result) return null;
 
   const handleUnlockPremium = async () => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('create-payment');
@@ -178,20 +202,27 @@ export function ResultsScreen() {
             Share Your Score
           </Button>
 
-          <Button
-            variant="glass"
-            size="lg"
-            className="w-full border-primary/30 hover:bg-primary/10"
-            onClick={handleUnlockPremium}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-            ) : (
-              <Crown className="w-5 h-5 mr-2 text-secondary" />
-            )}
-            Unlock Full Report — $6.99
-          </Button>
+          {isPremium ? (
+            <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-secondary/20 border border-secondary/30">
+              <Check className="w-5 h-5 text-secondary" />
+              <span className="text-secondary font-medium">Premium Unlocked</span>
+            </div>
+          ) : (
+            <Button
+              variant="glass"
+              size="lg"
+              className="w-full border-primary/30 hover:bg-primary/10"
+              onClick={handleUnlockPremium}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              ) : (
+                <Crown className="w-5 h-5 mr-2 text-secondary" />
+              )}
+              {user ? 'Unlock Full Report — $6.99' : 'Sign in to Unlock Premium'}
+            </Button>
+          )}
 
           <div className="grid grid-cols-2 gap-3">
             <Button
@@ -206,8 +237,8 @@ export function ResultsScreen() {
             <Button
               variant="outline"
               size="default"
-              className="w-full opacity-50"
-              disabled
+              className={`w-full ${!isPremium && 'opacity-50'}`}
+              disabled={!isPremium}
             >
               <Download className="w-4 h-4 mr-2" />
               PDF
