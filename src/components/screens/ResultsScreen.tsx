@@ -1,15 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useTest } from '@/context/TestContext';
 import { MODULES } from '@/types/questions';
-import { Share2, Crown, RotateCcw, Download, Brain, Zap, Target, Boxes } from 'lucide-react';
+import { Share2, Crown, RotateCcw, Download, Brain, Zap, Target, Boxes, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export function ResultsScreen() {
   const { result, resetTest } = useTest();
+  const [isLoading, setIsLoading] = useState(false);
 
   if (!result) return null;
+
+  const handleUnlockPremium = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-payment');
+      
+      if (error) {
+        toast.error('Failed to create payment session');
+        console.error('Payment error:', error);
+        return;
+      }
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (err) {
+      toast.error('Something went wrong');
+      console.error('Payment error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const moduleIcons: Record<string, React.ReactNode> = {
     pattern: <Brain className="w-5 h-5" />,
@@ -157,8 +182,14 @@ export function ResultsScreen() {
             variant="glass"
             size="lg"
             className="w-full border-primary/30 hover:bg-primary/10"
+            onClick={handleUnlockPremium}
+            disabled={isLoading}
           >
-            <Crown className="w-5 h-5 mr-2 text-secondary" />
+            {isLoading ? (
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+            ) : (
+              <Crown className="w-5 h-5 mr-2 text-secondary" />
+            )}
             Unlock Full Report — $6.99
           </Button>
 
