@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useTest } from '@/context/TestContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,23 +22,26 @@ export function WelcomeScreen() {
   const { user, isPremium, signOut } = useAuth();
   const navigate = useNavigate();
   const [displayName, setDisplayName] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
-  // Fetch user profile for display name
+  // Fetch user profile for display name and avatar
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user) {
         setDisplayName(null);
+        setAvatarUrl(null);
         return;
       }
       
       const { data } = await supabase
         .from('profiles')
-        .select('display_name')
+        .select('display_name, avatar_url')
         .eq('user_id', user.id)
         .maybeSingle();
       
-      if (data?.display_name) {
+      if (data) {
         setDisplayName(data.display_name);
+        setAvatarUrl(data.avatar_url);
       }
     };
     
@@ -84,7 +88,12 @@ export function WelcomeScreen() {
                 </>
               )}
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/50 border border-border/50">
-                <User className="w-4 h-4 text-muted-foreground" />
+                <Avatar className="w-6 h-6">
+                  <AvatarImage src={avatarUrl || undefined} alt={displayName || 'User avatar'} />
+                  <AvatarFallback className="text-xs bg-primary/20 text-primary">
+                    {(displayName || user.email?.split('@')[0] || 'U').charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
                 <span className="text-sm text-foreground font-medium">
                   {displayName || user.email?.split('@')[0]}
                 </span>
