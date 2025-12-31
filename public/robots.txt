@@ -17,7 +17,7 @@ Disallow: /auth
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://thorpe-iq-test.lovable.app/sitemap.xml
+Sitemap: https://thorpeiqtest.com/sitemap.xml
 
 # Crawl-delay for polite crawling
 Crawl-delay: 1
