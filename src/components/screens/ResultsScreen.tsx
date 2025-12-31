@@ -144,12 +144,15 @@ export function ResultsScreen() {
           title: 'Thorpe IQ Test Results',
           text: shareText,
         });
+        trackEvent('share_clicked', { method: 'native_share', iq_score: result.iqBase });
       } catch (err) {
         // User cancelled or error
+        trackEvent('share_cancelled', { method: 'native_share' });
       }
     } else {
       // Fallback to clipboard
       navigator.clipboard.writeText(shareText);
+      trackEvent('share_clicked', { method: 'clipboard', iq_score: result.iqBase });
     }
   };
 
