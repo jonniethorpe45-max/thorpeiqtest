@@ -89,6 +89,10 @@ export const en: Record<string, string> = {
   'faq.q4': 'Can I retake the test?',
   'faq.a4': 'Yes, you can retake the test as many times as you like. However, for the most accurate results, we recommend waiting at least a week between attempts.',
   
+  // CTA Section
+  'cta.title': 'Ready to Discover Your IQ?',
+  'cta.subtitle': 'Join over 500,000 people who have taken the Thorpe IQ Test',
+  
   // Footer
   'footer.privacy': 'Privacy Policy',
   'footer.terms': 'Terms of Service',
@@ -119,4 +123,44 @@ export const en: Record<string, string> = {
   'performance.average': 'Average',
   'performance.belowAverage': 'Below Average',
   'performance.needsDevelopment': 'Needs Development',
+  
+  // Disclaimer Screen
+  'disclaimer.title': 'Important Disclaimer',
+  'disclaimer.intro': 'Thorpe IQ Test provides an estimate of cognitive ability for',
+  'disclaimer.purpose': 'entertainment and personal insight only',
+  'disclaimer.notMedical': 'It is not a medical, psychological, or clinical diagnosis.',
+  'disclaimer.measuresTitle': 'What this test measures:',
+  'disclaimer.measure1': 'Pattern recognition skills',
+  'disclaimer.measure2': 'Spatial reasoning ability',
+  'disclaimer.measure3': 'Working memory capacity',
+  'disclaimer.measure4': 'Processing speed',
+  'disclaimer.warning': 'Results should not be used for clinical, academic, or employment decisions.',
+  'disclaimer.accept': 'I Understand, Continue',
+  'disclaimer.acknowledge': 'By continuing, you acknowledge this disclaimer',
+  
+  // Module Intro Screen
+  'module.overallProgress': 'Overall Progress',
+  'module.moduleOf': 'Module {current} of {total}',
+  'module.questions': '{count} questions',
+  'module.begin': 'Begin Module',
+  
+  // Module Complete Screen
+  'moduleComplete.title': 'Module Complete!',
+  'moduleComplete.correct': 'Correct',
+  'moduleComplete.accuracy': 'Accuracy',
+  'moduleComplete.moduleScore': 'Module Score',
+  'moduleComplete.viewResults': 'View Results',
+  'moduleComplete.nextModule': 'Next Module',
+  'moduleComplete.remaining': '{count} modules remaining',
+  
+  // Question Screen
+  'question.easy': 'Easy',
+  'question.medium': 'Medium',
+  'question.hard': 'Hard',
+
+  // Modules
+  'modules.pattern': 'Pattern Recognition',
+  'modules.spatial': 'Spatial Reasoning',
+  'modules.memory': 'Working Memory',
+  'modules.speed': 'Processing Speed',
 };
