@@ -16,6 +16,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 export function WelcomeScreen() {
   const { startTest } = useTest();
@@ -59,6 +60,7 @@ export function WelcomeScreen() {
       <header className="relative min-h-screen bg-gradient-hero flex flex-col items-center justify-center p-6 overflow-hidden">
         {/* Auth buttons */}
         <nav className="absolute top-4 right-4 z-20 flex items-center gap-2" aria-label="User navigation">
+          <LanguageSwitcher />
           {user ? (
             <>
               {isPremium && (
