@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
+import { trackEvent } from '@/lib/analytics';
 
 export interface WeeklyChallenge {
   id: string;
@@ -150,8 +151,20 @@ export function useChallenges() {
 
           if (!error) {
             completed.push(challenge.title);
+            trackEvent('challenge_completed', {
+              challenge_title: challenge.title,
+              module: challenge.module,
+              score,
+              target_score: challenge.target_score,
+            });
             if (score >= challenge.target_score) {
               passed.push(challenge.title);
+              trackEvent('challenge_passed', {
+                challenge_title: challenge.title,
+                module: challenge.module,
+                score,
+                target_score: challenge.target_score,
+              });
             }
           }
         }
