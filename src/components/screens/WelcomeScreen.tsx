@@ -60,8 +60,8 @@ export function WelcomeScreen() {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <header className="relative min-h-screen bg-gradient-hero flex flex-col items-center justify-center p-6 overflow-hidden">
-        {/* Language switcher - top left */}
-        <div className="absolute top-4 left-4 z-20">
+        {/* Language switcher - top left, offset for iOS status bar */}
+        <div className="absolute top-10 left-4 z-20">
           <LanguageSwitcher />
         </div>
 
