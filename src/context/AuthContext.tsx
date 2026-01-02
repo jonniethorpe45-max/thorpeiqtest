@@ -42,42 +42,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+    let subscription: { unsubscribe: () => void } | null = null;
+    
+    const initAuth = async () => {
+      try {
+        // Set up auth state listener FIRST
+        const { data } = supabase.auth.onAuthStateChange(
+          (event, session) => {
+            setSession(session);
+            setUser(session?.user ?? null);
+            setIsLoading(false);
+
+            // Check premium status after auth change (deferred to avoid deadlock)
+            if (session?.user) {
+              setTimeout(() => {
+                checkPremiumStatus();
+              }, 0);
+            } else {
+              setIsPremium(false);
+            }
+          }
+        );
+        subscription = data.subscription;
+
+        // THEN check for existing session
+        const { data: sessionData } = await supabase.auth.getSession();
+        setSession(sessionData.session);
+        setUser(sessionData.session?.user ?? null);
         setIsLoading(false);
 
-        // Check premium status after auth change (deferred to avoid deadlock)
-        if (session?.user) {
+        if (sessionData.session?.user) {
           setTimeout(() => {
             checkPremiumStatus();
           }, 0);
-        } else {
-          setIsPremium(false);
         }
+      } catch (e) {
+        console.warn('Auth initialization failed:', e);
+        setIsLoading(false);
       }
-    );
+    };
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
+    initAuth();
 
-      if (session?.user) {
-        setTimeout(() => {
-          checkPremiumStatus();
-        }, 0);
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
       }
-    });
-
-    return () => subscription.unsubscribe();
+    };
   }, []);
 
   const signUp = async (email: string, password: string) => {
-    const redirectUrl = `${window.location.origin}/`;
+    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/` : '/';
     
     const { error } = await supabase.auth.signUp({
       email,
