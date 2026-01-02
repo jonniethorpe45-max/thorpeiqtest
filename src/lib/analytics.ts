@@ -30,9 +30,15 @@ export const initializeGA = () => {
 };
 
 export const checkAndInitializeGA = () => {
-  const consent = localStorage.getItem("cookie-consent");
-  if (consent === "accepted") {
-    initializeGA();
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const consent = localStorage.getItem("cookie-consent");
+      if (consent === "accepted") {
+        initializeGA();
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to check GA consent:', e);
   }
 };
 
