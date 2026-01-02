@@ -81,15 +81,28 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
 
   html {
     @apply dark;
+    touch-action: manipulation;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* iOS WebView touch handling fixes */
+  button, 
+  a, 
+  [role="button"],
+  .cursor-pointer {
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
   }
 }
 
