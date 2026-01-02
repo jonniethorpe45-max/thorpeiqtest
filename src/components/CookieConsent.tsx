@@ -8,25 +8,43 @@ const CookieConsent = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookie-consent");
-    if (!consent) {
-      // Small delay for better UX
-      const timer = setTimeout(() => setIsVisible(true), 1000);
-      return () => clearTimeout(timer);
-    } else {
-      // Initialize GA if already accepted
-      checkAndInitializeGA();
+    try {
+      if (typeof window === 'undefined' || !window.localStorage) return;
+      
+      const consent = localStorage.getItem("cookie-consent");
+      if (!consent) {
+        // Small delay for better UX
+        const timer = setTimeout(() => setIsVisible(true), 1000);
+        return () => clearTimeout(timer);
+      } else {
+        // Initialize GA if already accepted
+        checkAndInitializeGA();
+      }
+    } catch (e) {
+      console.warn('Cookie consent check failed:', e);
     }
   }, []);
 
   const handleAccept = () => {
-    localStorage.setItem("cookie-consent", "accepted");
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem("cookie-consent", "accepted");
+      }
+    } catch (e) {
+      console.warn('Failed to save cookie consent:', e);
+    }
     initializeGA();
     setIsVisible(false);
   };
 
   const handleDecline = () => {
-    localStorage.setItem("cookie-consent", "declined");
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem("cookie-consent", "declined");
+      }
+    } catch (e) {
+      console.warn('Failed to save cookie consent:', e);
+    }
     setIsVisible(false);
   };
 

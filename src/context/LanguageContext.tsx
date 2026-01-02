@@ -58,23 +58,39 @@ const translations: Record<Language, Record<string, string>> = {
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
-    const saved = localStorage.getItem('language');
-    if (saved && LANGUAGES.some(l => l.code === saved)) {
-      return saved as Language;
-    }
-    // Detect browser language
-    const browserLang = navigator.language.split('-')[0] as Language;
-    if (LANGUAGES.some(l => l.code === browserLang)) {
-      return browserLang;
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const saved = localStorage.getItem('language');
+        if (saved && LANGUAGES.some(l => l.code === saved)) {
+          return saved as Language;
+        }
+      }
+      // Detect browser language
+      if (typeof navigator !== 'undefined' && navigator.language) {
+        const browserLang = navigator.language.split('-')[0] as Language;
+        if (LANGUAGES.some(l => l.code === browserLang)) {
+          return browserLang;
+        }
+      }
+    } catch (e) {
+      console.warn('Language detection failed:', e);
     }
     return 'en';
   });
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem('language', lang);
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('language', lang);
+      }
+    } catch (e) {
+      console.warn('Failed to save language preference:', e);
+    }
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    }
   };
 
   useEffect(() => {
