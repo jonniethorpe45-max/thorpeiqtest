@@ -65,8 +65,8 @@ export function WelcomeScreen() {
           <LanguageSwitcher />
         </div>
 
-        {/* Auth buttons - top right */}
-        <nav className="absolute top-4 right-4 z-20 flex items-center gap-2" aria-label="User navigation">
+        {/* Auth buttons - top right, offset for iOS status bar */}
+        <nav className="absolute top-10 right-4 z-20 flex items-center gap-2" aria-label="User navigation">
           {user ? (
             <>
               {isPremium && (
